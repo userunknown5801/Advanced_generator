@@ -8,6 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b0f13">
 <style>
   /* CSS Variables for easy theme customization */
   :root {
@@ -464,6 +466,19 @@
   // Initial setup
   updateCustomInputState(); // Set initial state for custom text input
   copyBtn.disabled = true; // Initially disable copy button
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => {
+        console.log(`Service Worker registered: ${reg.scope}`);
+      })
+      .catch(err => {
+        console.error('Service Worker registration failed:', err);
+      });
+  });
+}
 </script>
 </body>
 </html>
