@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Advanced Unicode Repeater</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Generate repeated Unicode characters like ZWSP or CGJ for various purposes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* CSS Variables for easy theme customization */
+  :root {
+    --bg-color: #0a0a10;
+    --card-bg: #1a1a2e;
+    --text-color: #e0e0e0;
+    --label-color: #b0b0b0;
+    --input-bg: #2a2a4a;
+    --input-border: #3a3a5a;
+    --input-text: #e0e0e0;
+    --button-bg-start: #ff0080;
+    --button-bg-mid: #7928ca;
+    --button-bg-end: #2afadf;
+    --button-text: #ffffff;
+    --shadow-color: rgba(0, 0, 0, 0.7);
+    --border-radius: 12px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+  }
+
+  body {
+    background: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: var(--spacing-md);
+    box-sizing: border-box;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 560px; /* Slightly wider card */
+  }
+
+  .card {
+    background: var(--card-bg);
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 30px var(--shadow-color);
+    border: 1px solid var(--input-border); /* Subtle border */
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 1.8rem; /* Slightly larger heading */
+    margin-bottom: var(--spacing-lg);
+    font-weight: 700;
+    background: linear-gradient(90deg, #ff0080, #7928ca, #2afadf, #ff0080); /* More vibrant rainbow */
+    background-size: 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbow 8s linear infinite; /* Slower animation */
+  }
+  @keyframes rainbow {
+    to { background-position: 400%; }
+  }
+
+  fieldset {
+    border: 1px solid var(--input-border);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  legend {
+    color: var(--label-color);
+    font-size: 0.9rem;
+    padding: 0 var(--spacing-sm);
+    font-weight: 600;
+  }
+
+  .form-group {
+    margin-bottom: var(--spacing-md);
+  }
+  .form-group:last-of-type {
+    margin-bottom: 0;
+  }
+
+  label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--label-color);
+    margin-bottom: var(--spacing-sm);
+    font-weight: 600;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 12px; /* Slightly more padding */
+    border-radius: var(--border-radius);
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--input-text);
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box; /* Include padding in width */
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--button-bg-mid);
+    box-shadow: 0 0 0 3px rgba(121, 40, 202, 0.3); /* Focus glow */
+  }
+  input::placeholder, textarea::placeholder {
+    color: var(--label-color);
+    opacity: 0.7;
+  }
+  input:disabled, select:disabled, textarea:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #1f1f3a;
+  }
+
+  textarea {
+    min-height: 150px; /* Taller textarea */
+    resize: vertical;
+    font-family: monospace; /* Monospace for output */
+  }
+
+  .actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  button {
+    flex: 1;
+    padding: 12px;
+    border-radius: var(--border-radius);
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--button-text);
+    background: linear-gradient(90deg, var(--button-bg-start), var(--button-bg-mid), var(--button-bg-end), var(--button-bg-start));
+    background-size: 300%;
+    animation: shine 5s linear infinite; /* Slower animation */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  }
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+  }
+  button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  }
+  @keyframes shine {
+    to { background-position: 300%; }
+  }
+
+  .status {
+    font-size: 0.8rem;
+    text-align: center;
+    margin-top: var(--spacing-md);
+    color: var(--label-color);
+    min-height: 1.2em; /* Prevent layout shift */
+  }
+  .note {
+    font-size: 0.7rem;
+    opacity: 0.7;
+    text-align: center;
+    margin-top: var(--spacing-sm);
+    color: var(--label-color);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 600px) {
+    .card {
+      padding: var(--spacing-md);
+    }
+    h1 {
+      font-size: 1.5rem;
+    }
+    .actions {
+      flex-direction: column;
+    }
+    button {
+      width: 100%;
+    }
+  }
+
+  /* --- MODIFIKASI CSS UNTUK count-input --- */
+  /* Sembunyikan tombol spin (panah atas/bawah) untuk input number */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield; /* Firefox */
+  }
+
+  /* Gaya khusus untuk input count agar mirip kalkulator */
+  #count-input {
+    font-size: 2.5rem; /* Ukuran font besar */
+    text-align: right; /* Teks rata kanan */
+    padding: 15px 12px; /* Padding vertikal lebih banyak */
+    height: auto; /* Biarkan tinggi menyesuaikan padding */
+    /* Pastikan tidak ada tombol spin juga untuk type="text" jika browser entah bagaimana menambahkannya */
+    -webkit-appearance: none; /* Untuk Safari/Chrome */
+    -moz-appearance: textfield; /* Untuk Firefox */
+  }
+  /* --- AKHIR MODIFIKASI CSS --- */
+</style>
+</head>
+<body>
+<main class="container">
+  <div class="card">
+    <h1>Advanced Unicode Repeater</h1>
+
+    <fieldset>
+      <legend>Configuration</legend>
+
+      <div class="form-group">
+        <label for="mode-select">Mode</label>
+        <select id="mode-select">
+          <option value="034F">U+034F (Combining Grapheme Joiner)</option>
+          <option value="200B">U+200B (Zero Width Space)</option>
+          <option value="034F200B">U+034F + U+200B</option>
+          <option value="custom">Custom Text</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="custom-text-input">Custom Text (e.g., \u034F\u200B or plain text)</label>
+        <input type="text" id="custom-text-input" placeholder="Enter custom Unicode or text" disabled aria-label="Custom text input, enabled when 'Custom Text' mode is selected.">
+      </div>
+
+      <div class="form-group">
+        <label for="count-input">Repeat Count</label>
+        <!-- MODIFIKASI HTML: type="number" menjadi type="text" -->
+        <input type="text" id="count-input" value="1500" min="0" inputmode="numeric" pattern="[0-9]*" aria-describedby="count-note">
+        <small id="count-note" class="note" style="text-align: left; margin-top: 4px; display: block;">Enter a number. Max recommended: 100,000 for performance. If 0, it will generate 1 unit.</small>
+      </div>
+    </fieldset>
+
+    <div class="actions">
+      <button id="generate-btn">Generate</button>
+      <button id="copy-btn">Copy Result</button>
+      <button id="clear-btn">Clear</button>
+    </div>
+
+    <div class="form-group">
+      <label for="output-textarea">Result</label>
+      <textarea id="output-textarea" readonly aria-live="polite"></textarea>
+    </div>
+
+    <div class="status" id="status-message">Idle</div>
+    <div class="note">HTML only • Offline ready • Async generation • Modern UI ✨</div>
+  </div>
+</main>
+
+<script>
+  // Get references to DOM elements
+  const modeSelect = document.getElementById('mode-select');
+  const customTextInput = document.getElementById('custom-text-input');
+  const countInput = document.getElementById('count-input');
+  const generateBtn = document.getElementById('generate-btn');
+  const copyBtn = document.getElementById('copy-btn');
+  const clearBtn = document.getElementById('clear-btn');
+  const outputTextarea = document.getElementById('output-textarea');
+  const statusMessage = document.getElementById('status-message');
+
+  // Helper function to decode Unicode escape sequences
+  function decodeUnicode(str) {
+    return str.replace(/\\u([0-9a-fA-F]{4})/g, (_, p) => String.fromCharCode(parseInt(p, 16)));
+  }
+
+  // Function to update the state of the custom text input
+  function updateCustomInputState() {
+    const isCustomMode = modeSelect.value === 'custom';
+    customTextInput.disabled = !isCustomMode;
+    if (isCustomMode) {
+      customTextInput.focus();
+      customTextInput.removeAttribute('aria-label');
+    } else {
+      customTextInput.setAttribute('aria-label', 'Custom text input, enabled when "Custom Text" mode is selected.');
+    }
+  }
+
+  // Main generation logic
+  async function generateText() {
+    const mode = modeSelect.value;
+    const custom = customTextInput.value;
+    // Ensure count is at least 1 for generation, even if input shows 0.
+    // Max recommended: 100,000 for performance.
+    const count = Math.max(1, Math.min(100000, parseCount(countInput.value)));
+    
+    outputTextarea.value = '';
+    statusMessage.textContent = 'Generating... 0%';
+    generateBtn.disabled = true;
+    copyBtn.disabled = true;
+    clearBtn.disabled = true;
+
+    let baseString = '';
+    if (mode === '034F') baseString = '\u034F';
+    else if (mode === '200B') baseString = '\u200B';
+    else if (mode === '034F200B') baseString = '\u034F\u200B';
+    else baseString = custom;
+
+    baseString = decodeUnicode(baseString);
+
+    const chunkSize = 999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999; // Process in larger chunks for speed
+    let generatedCount = 0;
+
+    function step() {
+      if (generatedCount >= count) {
+        statusMessage.textContent = `Done ✓ (${count} units generated)`;
+        generateBtn.disabled = false;
+        copyBtn.disabled = false;
+        clearBtn.disabled = false;
+        outputTextarea.focus(); // Focus on output after generation
+        return;
+      }
+
+      const remaining = count - generatedCount;
+      const currentChunkSize = Math.min(chunkSize, remaining);
+      outputTextarea.value += baseString.repeat(currentChunkSize);
+      generatedCount += currentChunkSize;
+
+      const progress = Math.floor((generatedCount / count) * 100);
+      statusMessage.textContent = `Generating... ${progress}%`;
+
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // Copy text to clipboard
+  async function copyText() {
+    if (!outputTextarea.value) {
+      statusMessage.textContent = 'Nothing to copy!';
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(outputTextarea.value);
+      statusMessage.textContent = 'Copied to clipboard ✔';
+      outputTextarea.focus();
+      outputTextarea.select();
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+      statusMessage.textContent = 'Failed to copy (check browser permissions)';
+    }
+  }
+
+  // Clear output and reset status
+  function clearOutput() {
+    outputTextarea.value = '';
+    statusMessage.textContent = 'Idle';
+    generateBtn.disabled = false;
+    copyBtn.disabled = true; // Disable copy if nothing to copy
+    clearBtn.disabled = false;
+    modeSelect.focus();
+  }
+
+  // Event Listeners
+  modeSelect.addEventListener('change', updateCustomInputState);
+  generateBtn.addEventListener('click', generateText);
+  copyBtn.addEventListener('click', copyText);
+  clearBtn.addEventListener('click', clearOutput);
+
+  // --- MODIFIKASI JAVASCRIPT UNTUK count-input ---
+
+  // Helper untuk memformat angka dengan pemisah ribuan (misalnya, 1.234.567)
+  // Menggunakan 'id-ID' locale untuk titik sebagai pemisah ribuan.
+  function formatNumberForDisplay(numStr) {
+    // Hapus semua karakter non-digit terlebih dahulu
+    const cleaned = numStr.replace(/[^0-9]/g, '');
+    if (cleaned === '') return '0'; // Jika kosong setelah dibersihkan, tampilkan '0'
+    
+    const num = parseInt(cleaned, 10);
+    return num.toLocaleString('id-ID');
+  }
+
+  // Helper untuk membersihkan string input menjadi hanya digit
+  function cleanInputToDigits(str) {
+    return str.replace(/[^0-9]/g, '');
+  }
+
+  // Fungsi parseCount yang diperbarui untuk menggunakan cleanInputToDigits
+  function parseCount(value) {
+    const cleaned = cleanInputToDigits(value);
+    return parseInt(cleaned, 10) || 0;
+  }
+
+  // Inisialisasi: format nilai awal countInput
+  countInput.value = formatNumberForDisplay(countInput.value);
+
+  countInput.addEventListener('input', (event) => {
+    const inputElement = event.target;
+    const oldValue = inputElement.value;
+    const oldCursorPos = inputElement.selectionStart;
+
+    // 1. Tentukan jumlah digit efektif sebelum posisi kursor lama
+    const rawPrefixBeforeCursor = oldValue.substring(0, oldCursorPos);
+    const cleanedPrefixBeforeCursor = cleanInputToDigits(rawPrefixBeforeCursor);
+    // Jika prefix kosong, berarti 0 digit. Jika tidak, parse dan ambil panjangnya.
+    const effectiveDigitsBeforeCursor = cleanedPrefixBeforeCursor === '' ? 0 : String(parseInt(cleanedPrefixBeforeCursor, 10)).length;
+
+    // 2. Bersihkan seluruh nilai input
+    let cleanedValue = cleanInputToDigits(oldValue);
+
+    // Tangani input kosong: jika semua karakter dihapus, anggap sebagai 0
+    if (cleanedValue === '') {
+      inputElement.value = '0';
+      inputElement.setSelectionRange(1, 1); // Kursor setelah 0
+      return;
+    }
+
+    // Hapus nol di depan jika bukan hanya "0"
+    if (cleanedValue.length > 1 && cleanedValue.startsWith('0')) {
+        cleanedValue = parseInt(cleanedValue, 10).toString();
+    }
+
+    // 3. Format nilai yang sudah dibersihkan untuk tampilan
+    const formattedValue = formatNumberForDisplay(cleanedValue);
+
+    // 4. Perbarui nilai input
+    inputElement.value = formattedValue;
+
+    // 5. Hitung posisi kursor baru
+    let newCursorPos = 0;
+    let currentDigitsCount = 0;
+    for (let i = 0; i < formattedValue.length; i++) {
+      if (formattedValue[i].match(/[0-9]/)) {
+        currentDigitsCount++;
+      }
+      if (currentDigitsCount === effectiveDigitsBeforeCursor) {
+        newCursorPos = i + 1;
+        break;
+      }
+    }
+    
+    // Penanganan khusus untuk kursor di paling akhir atau paling awal
+    if (oldCursorPos === oldValue.length) {
+        newCursorPos = formattedValue.length;
+    } else if (effectiveDigitsBeforeCursor === 0 && cleanedValue.length > 0) {
+        // Jika kursor berada di paling awal dan ada digit dalam nilai
+        // Temukan posisi digit pertama dalam string yang diformat
+        const firstDigitMatch = formattedValue.match(/[0-9]/);
+        newCursorPos = firstDigitMatch ? formattedValue.indexOf(firstDigitMatch[0]) : 0;
+    }
+
+    inputElement.setSelectionRange(newCursorPos, newCursorPos);
+  });
+  // --- AKHIR MODIFIKASI JAVASCRIPT ---
+
+  // Initial setup
+  updateCustomInputState(); // Set initial state for custom text input
+  copyBtn.disabled = true; // Initially disable copy button
+</script>
+</body>
+</html>
